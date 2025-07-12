@@ -71,17 +71,15 @@ class Player {
     }
 
     update() {
-        if (this.image) {
-            if (keys.ArrowLeft.pressed && this.position.x >= 0) {
-                this.velocity.x = -5;
-            } else if (keys.ArrowRight.pressed && this.position.x <= world.width - this.width) {
-                this.velocity.x = 5;
-            } else {
-                this.velocity.x = 0;
-            }
-            this.position.x += this.velocity.x;
-            this.draw();
+        if (!this.image) return;
+        this.velocity.x = 0;
+        if (keys.ArrowLeft.pressed && this.position.x > 0) {
+            this.velocity.x = -5;
+        } else if (keys.ArrowRight.pressed && this.position.x < world.width - this.width) {
+            this.velocity.x = 5;
         }
+        this.position.x += this.velocity.x;
+        this.draw();
     }
 }
 
@@ -110,23 +108,20 @@ class Alien {
     }
 
     update({ velocity }) {
-        if (this.image) {
-            this.position.x += velocity.x;
-            this.position.y += velocity.y;
-            if (this.position.y + this.height >= world.height) {
-                console.log('You loose');
-            }
-        }
+        if (!this.image) return;
+        this.position.x += velocity.x;
+        this.position.y += velocity.y;
         this.draw();
+        if (this.position.y + this.height >= world.height) {
+            console.log('You lose');
+        }
     }
 
     shoot(alienMissiles) {
-        if (this.position) {
-            alienMissiles.push(new alienMissile({
-                position: { x: this.position.x, y: this.position.y },
-                velocity: { x: 0, y: 3 }
-            }));
-        }
+        alienMissiles.push(new AlienMissile({
+            position: { x: this.position.x + this.width / 2, y: this.position.y + this.height },
+            velocity: { x: 0, y: 3 }
+        }));
     }
 }
 
@@ -143,7 +138,6 @@ class Missile {
         c.save();
         c.fillStyle = 'red';
         c.fillRect(this.position.x, this.position.y, this.width, this.height);
-        c.fill();
         c.restore();
     }
 
@@ -157,7 +151,8 @@ class Missile {
 class Grid {
     constructor() {
         this.position = { x: 0, y: 0 };
-        this.velocity = { x: 1 * difficultyLevel, y: 0 };
+        // Limiter la vitesse pour éviter le crash
+        this.velocity = { x: Math.min(2, 0.7 * difficultyLevel), y: 0 };
         this.invaders = [];
         this.createInvaders();
     }
@@ -221,8 +216,8 @@ class Particule {
     }
 }
 
-// Classe alienMissile : Gère les missiles tirés par les aliens
-class alienMissile {
+// Classe AlienMissile : Gère les missiles tirés par les aliens
+class AlienMissile {
     constructor({ position, velocity }) {
         this.position = position;
         this.velocity = velocity;
@@ -234,14 +229,13 @@ class alienMissile {
         c.save();
         c.fillStyle = 'yellow';
         c.fillRect(this.position.x, this.position.y, this.width, this.height);
-        c.fill();
         c.restore();
     }
 
     update() {
-        this.draw();
         this.position.x += this.velocity.x;
         this.position.y += this.velocity.y;
+        this.draw();
     }
 }
 
@@ -276,9 +270,9 @@ const init = () => {
 
 // Fonction pour mettre à jour l'affichage des vies, du niveau et du score
 const updateDisplays = () => {
-    levelDisplay.textContent = difficultyLevel.toString();
-    livesDisplay.textContent = lifes.toString();
-    scoreDisplay.textContent = score.toString();
+    levelDisplay.textContent = difficultyLevel.toFixed(1);
+    livesDisplay.textContent = lifes;
+    scoreDisplay.textContent = score;
 };
 
 // Fonction pour gérer la perte de vie du joueur
@@ -297,13 +291,6 @@ const lostLife = () => {
     }
 };
 
-document.getElementById('restartButton').addEventListener('click', () => {
-    document.getElementById('gameOverScreen').classList.add('hidden');
-    difficultyLevel = 1;
-    init();
-});
-
-
 // Fonction pour gérer l'augmentation de score lorsqu'un alien est détruit
 const increaseScore = () => {
     score += 10;
@@ -318,14 +305,11 @@ const togglePause = () => {
             cancelAnimationFrame(animationId);
             animationId = null;
         }
-        // Reset des touches pour éviter comportement non voulu
         keys.ArrowLeft.pressed = false;
         keys.ArrowRight.pressed = false;
         keys.fired.pressed = false;
     } else {
-        if (!animationId) {
-            animationLoop();
-        }
+        if (!animationId) animationLoop();
     }
 };
 
@@ -349,14 +333,17 @@ const animationLoop = () => {
     // Mettre à jour et dessiner les aliens et gérer les collisions
     grids.forEach((grid, indexGrid) => {
         grid.update();
+
         // Probabilité de tir basée sur la difficulté
-        const fireProbability = 0.01 * difficultyLevel;
+        const fireProbability = 0.04 * difficultyLevel;
         if (grid.invaders.length > 0 && Math.random() < fireProbability) {
             const randomAlienIndex = Math.floor(Math.random() * grid.invaders.length);
             grid.invaders[randomAlienIndex].shoot(alienMissiles);
         }
+
         grid.invaders.forEach((invader, indexI) => {
             invader.update({ velocity: grid.velocity });
+
             missiles.forEach((missile, indexM) => {
                 if (
                     missile.position.y <= invader.position.y + invader.height &&
@@ -376,6 +363,7 @@ const animationLoop = () => {
                             color: 'red'
                         }));
                     }
+
                     setTimeout(() => {
                         grid.invaders.splice(indexI, 1);
                         missiles.splice(indexM, 1);
@@ -398,6 +386,7 @@ const animationLoop = () => {
         } else {
             alienMissile.update();
         }
+
         if (
             alienMissile.position.y + alienMissile.height >= player.position.y &&
             alienMissile.position.y <= player.position.y + player.height &&
@@ -445,10 +434,10 @@ window.addEventListener('keydown', (event) => {
             keys.ArrowRight.pressed = true;
             break;
         case ' ':
-            event.preventDefault(); // Empêche le scroll de la page sur espace
+            event.preventDefault();
             player.shoot();
             break;
-        case 'p': // Raccourci clavier pour pause/play
+        case 'p':
             togglePause();
             break;
     }
@@ -479,7 +468,12 @@ document.getElementById('pauseButton').addEventListener('click', () => {
     togglePause();
 });
 
-
+// Bouton restart
+document.getElementById('restartButton').addEventListener('click', () => {
+    document.getElementById('gameOverScreen').classList.add('hidden');
+    difficultyLevel = 1;
+    init();
+});
 
 // Initialisation du jeu au chargement
 init();
