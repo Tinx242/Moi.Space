@@ -14,4 +14,15 @@ Visitez le site ici : [MOI.SPACE]( https://tinx242.github.io/Moi.Space/) 🌐
 
 - 🎮 Gameplay classique inspiré de Space Invaders.
 - 🚀 Interface intuitive et facile à utiliser.
+---
+
+## 📞 CONTACT
+
+Pour toute question ou collaboration, n'hésitez pas à me contacter :
+### ➡️ Email: [marthin.likouanga@gmail.com](mailto:marthin.likouanga@gmail.com)
+### ➡️ LinkedIn: [likouanga-clotaire-marthin](https://www.linkedin.com/in/likouanga-clotaire-marthin-99b01b302/)
+
+---
+
+© 2025 MARTHIN . Tous droits réservés ✔️​
 
