@@ -26,6 +26,10 @@ const keys = {
 let lastShotTime = 0;
 const shotCooldown = 10; // Délai en nombre de frames
 
+// Variable pour stocker l'ID de la boucle d'animation
+let animationId = null;
+let isGamePaused = false;
+
 // Classe Player : Gère le joueur, ses mouvements et ses tirs
 class Player {
     constructor() {
@@ -294,29 +298,31 @@ const increaseScore = () => {
     updateDisplays();
 };
 
-// Écouteurs d'événements pour les boutons Démarrer et Pause
-document.getElementById('startButton').addEventListener('click', () => {
-    init();
-    animationLoop();
-});
-
-document.getElementById('pauseButton').addEventListener('click', () => {
-    // Mettre en pause et reprendre le jeu
+// Fonction togglePause pour gérer pause/reprise
+const togglePause = () => {
+    isGamePaused = !isGamePaused;
     if (isGamePaused) {
-        animationLoop();
-        isGamePaused = false;
+        if (animationId) {
+            cancelAnimationFrame(animationId);
+            animationId = null;
+        }
+        // Reset des touches pour éviter comportement non voulu
+        keys.ArrowLeft.pressed = false;
+        keys.ArrowRight.pressed = false;
+        keys.fired.pressed = false;
     } else {
-        isGamePaused = true;
+        if (!animationId) {
+            animationLoop();
+        }
     }
-});
-
-// Variable pour gérer l'état de pause
-let isGamePaused = false;
+};
 
 // Boucle principale du jeu
 const animationLoop = () => {
     if (isGamePaused) return;
+
     c.clearRect(0, 0, world.width, world.height);
+
     player.update();
 
     // Mettre à jour et dessiner les missiles du joueur
@@ -340,10 +346,12 @@ const animationLoop = () => {
         grid.invaders.forEach((invader, indexI) => {
             invader.update({ velocity: grid.velocity });
             missiles.forEach((missile, indexM) => {
-                if (missile.position.y <= invader.position.y + invader.height &&
+                if (
+                    missile.position.y <= invader.position.y + invader.height &&
                     missile.position.y >= invader.position.y &&
                     missile.position.x + missile.width >= invader.position.x &&
-                    missile.position.x - missile.width <= invader.position.x + invader.width) {
+                    missile.position.x - missile.width <= invader.position.x + invader.width
+                ) {
                     // Ajout des particules pour l'effet d'explosion
                     for (let i = 0; i < 12; i++) {
                         particules.push(new Particule({
@@ -359,7 +367,7 @@ const animationLoop = () => {
                     setTimeout(() => {
                         grid.invaders.splice(indexI, 1);
                         missiles.splice(indexM, 1);
-                        if (grid.invaders.length === 0 && grids.length == 1) {
+                        if (grid.invaders.length === 0 && grids.length === 1) {
                             difficultyLevel += 0.5;
                             grids.splice(indexGrid, 1);
                             grids.push(new Grid());
@@ -371,17 +379,19 @@ const animationLoop = () => {
         });
     });
 
-    // Mettre à jour et dessiner les missiles des aliens
+    // Mettre à jour et dessiner les missiles aliens
     alienMissiles.forEach((alienMissile, index) => {
         if (alienMissile.position.y + alienMissile.height >= world.height) {
             alienMissiles.splice(index, 1);
         } else {
             alienMissile.update();
         }
-        if (alienMissile.position.y + alienMissile.height >= player.position.y &&
+        if (
+            alienMissile.position.y + alienMissile.height >= player.position.y &&
             alienMissile.position.y <= player.position.y + player.height &&
             alienMissile.position.x >= player.position.x &&
-            alienMissile.position.x + alienMissile.width <= player.position.x + player.width) {
+            alienMissile.position.x + alienMissile.width <= player.position.x + player.width
+        ) {
             alienMissiles.splice(index, 1);
             for (let i = 0; i < 22; i++) {
                 particules.push(new Particule({
@@ -408,11 +418,13 @@ const animationLoop = () => {
     });
 
     frames++;
-    requestAnimationFrame(animationLoop);
+    animationId = requestAnimationFrame(animationLoop);
 };
 
-// Écouteurs d'événements pour le clavier
-addEventListener('keydown', (event) => {
+// Gestion des événements clavier
+window.addEventListener('keydown', (event) => {
+    if (isGamePaused) return;
+
     switch (event.key) {
         case 'ArrowLeft':
             keys.ArrowLeft.pressed = true;
@@ -421,12 +433,16 @@ addEventListener('keydown', (event) => {
             keys.ArrowRight.pressed = true;
             break;
         case ' ':
+            event.preventDefault(); // Empêche le scroll de la page sur espace
             player.shoot();
+            break;
+        case 'p': // Raccourci clavier pour pause/play
+            togglePause();
             break;
     }
 });
 
-addEventListener('keyup', (event) => {
+window.addEventListener('keyup', (event) => {
     switch (event.key) {
         case 'ArrowLeft':
             keys.ArrowLeft.pressed = false;
@@ -437,8 +453,19 @@ addEventListener('keyup', (event) => {
     }
 });
 
-// Initialiser le jeu
-init();
+// Bouton démarrer
+document.getElementById('startButton').addEventListener('click', () => {
+    init();
+    isGamePaused = false;
+    if (!animationId) {
+        animationLoop();
+    }
+});
 
-// Démarrer la boucle d'animation
-animationLoop();
+// Bouton pause
+document.getElementById('pauseButton').addEventListener('click', () => {
+    togglePause();
+});
+
+// Initialisation du jeu au chargement
+init();

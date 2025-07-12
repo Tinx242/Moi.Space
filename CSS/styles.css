@@ -1,18 +1,71 @@
 @import url(reset.css);
-body{
-    margin:0;
-    padding:0;
-    background:black;
-    width:100%;
-    text-align:center
-    
-}
-#gameBoard{
-    width:80%;
-    height:80vh;
-    position:absolute;            
-    top: 50%;                        
-    transform: translate(-50%, -50%) ;
-    border:2px dotted white
+
+body {
+  margin: 0;
+  padding: 0;
+  background: black;
+  color: white;
+  font-family: Arial, sans-serif;
+  text-align: center;
 }
 
+#gameBoard {
+  width: 80%;
+  height: 80vh;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border: 2px dotted white;
+}
+
+.hud {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 20px;
+  font-size: 1.2rem;
+}
+
+.controls {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+button {
+  padding: 10px 15px;
+  background-color: #222;
+  color: white;
+  border: 1px solid white;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #555;
+}
+
+.hidden {
+  display: none;
+}
+
+.title {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 2rem;
+  color: white;
+}
+
+footer {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.8rem;
+  color: #ccc;
+}
