@@ -1,15 +1,40 @@
+html{
+    font-size: 62.5%;
+    scroll-behavior: smooth;
+}
+*{
+    box-sizing: border-box;
+}
 body{
+    font: 1.6rem 'Open Sans',sans-serif;
+    margin: 0;
+    background-color: var(--bgcolor);
+    line-height: 1.6;
+    letter-spacing: .1rem ;
+    text-rendering: optimizeSpeed;
+    min-height: 100svh;
+}
+h1,h2,h3,h4,h5,h6,p,figure, ul, ol{
+
     margin: 0;
     padding: 0;
-    width: 100%;
-    text-align: center;
-    background-color: black;
+    font-weight: 300;
+    list-style-type: none;
 }
-#gameBoard{
-    width: 80%;
-    height: 80vh;
-    position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    border: 2px dotted white;
+
+a{ 
+  text-decoration: none;
+  color: inherit;
 }
+
+ul,ol {
+  list-style: none;
+}
+
+img,picture,video,canvas,svg {
+  display: inline-block;
+  width: 100%;
+  vertical-align: middle;
+  object-fit: cover;
+}
+

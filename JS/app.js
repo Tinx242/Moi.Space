@@ -285,12 +285,24 @@ const updateDisplays = () => {
 const lostLife = () => {
     lifes--;
     updateDisplays();
+
+    // Effet visuel de perte de vie
+    world.classList.add('player-hit-effect');
+    setTimeout(() => world.classList.remove('player-hit-effect'), 500);
+
     if (lifes <= 0) {
-        alert('Perdu');
-        difficultyLevel = 1;
-        init();
+        // Afficher l'écran Game Over
+        document.getElementById('gameOverScreen').classList.remove('hidden');
+        cancelAnimationFrame(animationId);
     }
 };
+
+document.getElementById('restartButton').addEventListener('click', () => {
+    document.getElementById('gameOverScreen').classList.add('hidden');
+    difficultyLevel = 1;
+    init();
+});
+
 
 // Fonction pour gérer l'augmentation de score lorsqu'un alien est détruit
 const increaseScore = () => {
@@ -466,6 +478,8 @@ document.getElementById('startButton').addEventListener('click', () => {
 document.getElementById('pauseButton').addEventListener('click', () => {
     togglePause();
 });
+
+
 
 // Initialisation du jeu au chargement
 init();

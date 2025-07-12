@@ -1,22 +1,49 @@
 @import url(reset.css);
 
+/* Base styling */
+:root {
+  --bg-color: #000;
+  --text-color: #fff;
+  --accent-color: #1e90ff;
+  --border-color: #fff;
+  --button-bg: #222;
+  --button-hover-bg: #444;
+  --footer-color: #aaa;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   padding: 0;
-  background: black;
-  color: white;
-  font-family: Arial, sans-serif;
+  background: var(--bg-color);
+  color: var(--text-color);
+  font-family: 'Arial', sans-serif;
   text-align: center;
+  line-height: 1.6;
 }
 
 #gameBoard {
   width: 80%;
+  max-width: 1000px;
   height: 80vh;
+  margin: 0 auto;
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  border: 2px dotted white;
+  border: 2px dashed var(--border-color);
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.03);
+  transition: box-shadow 0.3s ease;
+}
+
+#gameBoard:hover {
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
 }
 
 .hud {
@@ -25,8 +52,12 @@ body {
   left: 50%;
   transform: translateX(-50%);
   display: flex;
+  flex-wrap: wrap;
   gap: 20px;
   font-size: 1.2rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 8px 16px;
+  border-radius: 8px;
 }
 
 .controls {
@@ -34,31 +65,44 @@ body {
   bottom: 20px;
   right: 20px;
   display: flex;
-  gap: 10px;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 button {
-  padding: 10px 15px;
-  background-color: #222;
-  color: white;
-  border: 1px solid white;
+  padding: 10px 18px;
+  background-color: var(--button-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
   cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 button:hover {
-  background-color: #555;
+  background-color: var(--button-hover-bg);
+  transform: scale(1.05);
+}
+
+button:active {
+  transform: scale(0.98);
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 .title {
   position: absolute;
   top: 10px;
   left: 10px;
-  font-size: 2rem;
-  color: white;
+  font-size: 3rem;
+  font-weight: bold;
+  color: var(--accent-color);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 6px 12px;
+  border-radius: 6px;
 }
 
 footer {
@@ -66,6 +110,72 @@ footer {
   bottom: 10px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 0.8rem;
-  color: #ccc;
+  color: var(--accent-color);
+  opacity: 0.8;
+}
+
+#gameOverScreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.95), black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.game-over-content {
+  text-align: center;
+  color: white;
+  background: rgba(30, 30, 30, 0.85);
+  padding: 40px;
+  border: 2px solid red;
+  border-radius: 15px;
+  box-shadow: 0 0 20px red;
+  animation: fadeInScale 0.5s ease-out;
+}
+
+.game-over-content h1 {
+  font-size: 3rem;
+  margin-bottom: 10px;
+  color: #ff5555;
+  text-shadow: 0 0 10px red;
+}
+
+.game-over-content p {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+}
+
+#restartButton {
+  padding: 10px 20px;
+  font-size: 1rem;
+  background-color: black;
+  border: 1px solid red;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+#restartButton:hover {
+  background-color: red;
+  color: black;
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.hidden {
+  display: none;
 }

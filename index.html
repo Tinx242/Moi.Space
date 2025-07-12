@@ -15,16 +15,24 @@
     <div>Score: <span id="score">0</span></div>
   </div>
 
+
   <canvas id="gameBoard"></canvas>
 
   <div class="controls">
     <button id="startButton">Démarrer / Relancer</button>
     <button id="pauseButton">Pause</button>
   </div>
+  <div id="gameOverScreen" class="hidden">
+  <div class="game-over-content">
+    <h1>Game Over</h1>
+    <button id="restartButton">Recommencer</button>
+  </div>
+</div>
 
-  <footer>
-    <p>&copy; - Tinx242 <time datetime="2025">2025</time></p>
-  </footer>
+<footer>
+  <p>&copy; - Tinx242 <time datetime="2025">2025</time></p>
+</footer>
+
 
   <script src="./JS/app.js"></script>
 </body>
