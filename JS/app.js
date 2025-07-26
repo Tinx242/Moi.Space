@@ -477,3 +477,33 @@ document.getElementById('restartButton').addEventListener('click', () => {
 
 // Initialisation du jeu au chargement
 init();
+
+const isMobileOrTablet = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+if (isMobileOrTablet) {
+    document.body.innerHTML = `
+        <div style="
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: red;
+            font-size: 1.5rem;
+            text-align: center;
+            padding: 20px;
+            text-align: center;
+            color: white;
+            background: rgba(30, 30, 30, 0.85);
+            
+            border: 20px solid red;;
+            box-shadow: 0 0 20px red;
+            animation: fadeInScale 0.5s ease-out;
+        ">
+            Ce jeu ne peut être lancé que sur un ordinateur (PC ou Mac).<br>
+            Veuillez y accéder depuis un ordinateur.<br>
+            Merci de votre compréhension.
+        </div>
+    `;
+    throw new Error("Plateforme non supportée");
+}
+
